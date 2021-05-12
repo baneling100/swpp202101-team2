@@ -4,6 +4,7 @@
 #include "../backend/GEPUnpack.h"
 #include "../backend/RegisterSpill.h"
 #include "../backend/UnfoldVectorInst.h"
+#include "../backend/SplitSelfLoop.h"
 
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/Support/raw_ostream.h"
@@ -62,7 +63,8 @@ int main(int argc, char *argv[]) {
   // from FPM to MPM
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
   MPM.run(*M, MAM);
-
+  
+  SplitSelfLoopPass().run(*M, MAM);
   UnfoldVectorInstPass().run(*M, MAM);
   LivenessAnalysis().run(*M, MAM);
   SpillCostAnalysis().run(*M, MAM);
